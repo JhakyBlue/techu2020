@@ -1,0 +1,128 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../src/cuenta-component/cuenta-component.html">
+<link rel="import" href="../src/movimiento-component/movimiento-component.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel=”import” href=”../bower_components/paper-spinner/paper-spinner.html”>
+<link rel="import" href="shared-styles.html">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+<dom-module id="my-view1">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      h1 {
+        font-size: 1.1em;
+        color: #1d73b2;
+      }
+    </style>
+
+    <div class="card">
+      <!--div class="circle">
+       1
+     </div-->
+    <iron-ajax
+      url="https://backjav.herokuapp.com/api-peru/v1/account/{{usu.id}}"
+      handle-as="json"
+      method="GET"
+      content-type="application/json"
+      last-response = "{{cuentas}}"
+      loading="{{cargando}}"
+      auto>
+    </iron-ajax>
+    <template is="dom-if" if="{{cargando}}">
+      <paper-spinner active="[[cargando]]"></paper-spinner>
+    </template>
+    <template is="dom-if" if="{{!cargando}}">
+      <template is="dom-if" if="{{_isEqualTo(vistacuenta,1)}}">
+          <cuenta-component usucuentas="[[cuentas]]" on-vista="EvaluaVista"></cuenta-component>
+      </template>
+      <template is="dom-if" if="{{_isEqualTo(vistacuenta,0)}}">
+            <movimiento-component ctamovimientos="[[movimientos]]" usucuenta="{{cuenta}}" impdisponible="{{disponible}}" on-vista="EvaluaVista"></movimiento-component>
+      </template>
+    </template>
+  </template>
+
+  <script>
+    class MyView1 extends Polymer.Element {
+      static get is() { return 'my-view1'; }
+      static get properties() {
+        return {
+          cuentas:{
+            type: Array,
+            value: function(){
+            return[];}
+            },
+          cargando:{
+            type: Boolean
+          },
+          movimientos:{
+            type: Array,
+            value: function(){
+            return[];}
+            },
+          vercuentas:{
+              type: Boolean,
+              value: true
+            },
+          vermovimientos:{
+              type: Boolean,
+              value: false
+            },
+          cuenta:{
+              type: String,
+              value: ""
+            },
+          disponible: {
+              type: Number
+            },
+          loggedUser:{
+              type: Object
+          },
+          vistacuenta:{
+            type: Number,
+            value: 1
+          }
+        };
+      }
+      cuentas(data){
+        if(request.succeeded){
+          console.log("API REST responde ok");
+        }
+      }
+      _isEqualTo(title, number){
+        return title==number;
+      }
+
+      EvaluaVista(e){
+        console.log("Evalua Vista");
+        console.log(e);
+        this.vercuentas=e.detail.vercuentas;
+        this.vermovimientos=e.detail.vermovimientos;
+        this.movimientos=e.detail.movimientos;
+        this.cuenta=e.detail.cuenta;
+        this.disponible=e.detail.saldo;
+        this.vistacuenta=e.detail.vistacuenta;
+        console.log("ver cuenta " + this.vercuentas);
+        console.log("ver movimientos " + this.vermovimientos);
+        console.log("Disponible " + this.disponible);
+      }
+    }
+
+    window.customElements.define(MyView1.is, MyView1);
+  </script>
+</dom-module>

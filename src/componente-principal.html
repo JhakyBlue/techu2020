@@ -1,0 +1,77 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../src/login-component/login-component.html">
+<link rel="import" href="../src/my-app.html">
+
+
+<dom-module id="componente-principal">
+  <template>
+    <style>
+      :host{
+        display: block;
+        margin: 15px;
+      }
+    </style>
+
+   <template is="dom-if" if="{{_isEqualTo(menu,0)}}">
+       <login-component on-login="EvaluaMenu"></login-component>
+    </template>
+    <template is="dom-if" if="{{_isEqualTo(menu,1)}}">
+        <my-app user="{{loggedUser}}" on-login="EvaluaMenu"></my-app>
+     </template>
+  </template>
+  <script type="text/javascript">
+
+    class ComponentePrincipal extends Polymer.Element {
+      static get is() {
+          return 'componente-principal';
+      }
+
+      static get properties(){
+        return{
+          menu : {
+            type: Number,
+            value: 0
+          },
+          dni : {
+            type: String,
+            value:''
+          },
+          password : {
+            type: String,
+            value:''
+          },
+          loggedUser:{
+            type: Object
+          }
+        };
+      }
+      _isEqualTo(title, number){
+        return title==number;
+      }
+      EvaluaMenu(e){
+        console.log("Evalua menu");
+        console.log(e);
+        this.menu=e.detail.menu;
+        this.loggedUser=e.detail.loggedUser;
+        console.log(this.loggedUser);
+      }
+      incrementar(){
+        this.contador++;
+        console.log(this.contador);
+      }
+      modificar(){
+        console.log(this.dni);
+        this.dni='';
+      }
+      submitForm(){
+        console.log("Este es una prueba");
+        var myDni = this.dni;
+        console.log("El DNI ES " + myDni);
+      }
+    }
+
+    window.customElements.define(ComponentePrincipal.is, ComponentePrincipal);
+  </script>
+</componente-basico>

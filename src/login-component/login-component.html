@@ -1,0 +1,146 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+
+<dom-module id="login-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+        text-align: center;
+      }
+      paper-card{
+        width: 400px;
+        text-align: left;
+        padding: 2em;2em;2em;2em;
+        color:
+      }
+      paper-card .card-actions{
+        padding-top: 1em;
+        text-align: center;
+      }
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <iron-ajax
+      id="ajax"
+      url="http://backjav.herokuapp.com/api-peru/v1/loginj"
+      handle-as="json"
+      method="POST"
+      content-type="application/json"
+      on-response = "loginExitoso"
+      on-error="loginError">
+    </iron-ajax>
+
+      <paper-card elevation="3" animatedShadow="false">
+        <h2 class="text-center text-primary">Tu Banco virtual</h2>
+        <form is="iron-form" id="form" method="post">
+          <div class="card-content">
+            <paper-input value={{dni::input}} id="dni" name="dni" label="Nro de Documento" required></paper-input>
+            <paper-input value={{password::input}} id="password" name="password" label="Contraseña" required type="password"></paper-input>
+          </div>
+          <p class="text-danger">{{mensaje::input}}</p>
+          <div class="card-actions">
+            <paper-button class="btn btn-primary" on-click="validarLogin" raised>Ingresar</paper-button>
+            <paper-button class="btn btn-primary" raised>Afiliate</paper-button>
+          </div>
+        </form>
+      </paper-card>
+
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class LoginComponent extends Polymer.Element {
+      static get is() { return 'login-component'; }
+      static get properties() {
+        return {
+          menu: {
+            type: Number,
+            value:0
+          },
+          dni:{
+            type: String
+          },
+          password:{
+            type: String
+          },
+          mensaje:{
+            type: String,
+            value: ""
+          },
+          loggedUser:{
+            type: Object
+          }
+
+        };
+      }
+
+      validarLogin(){
+        console.log("Este es una prueba Login");
+        console.log("El dni ES " + this.dni);
+        console.log("El password ES " + this.password);
+        var usu ={
+          dni: this.dni,
+          password: this.password
+        }
+        console.log(usu);
+        console.log(usu);
+        this.$.ajax.body = JSON.stringify(usu);
+        this.$.ajax.params=usu;
+        this.$.ajax.generateRequest();
+        console.log("Estoy en validar login");
+        console.log("primer valor de menu "+ this.menu);
+        this.set("menu",1);
+      }
+      loginExitoso(event,request){
+        var usuario=event.detail.response;
+        console.log(usuario);
+        if(usuario.id==undefined){
+          this.mensaje=event.detail.response.msg;
+          console.log("id indefinido");
+        }
+        else {
+          if(usuario.logged){
+            console.log("Usuario logueado con exito");
+            this.loggedUser=usuario;
+            console.log(this.loggedUser);
+            this.menu=1;
+            this.set("menu",1);
+            console.log("valor de menu "+ this.menu);
+            this.ingresarCliente();
+          }
+        }
+      }
+      ingresarCliente(){
+        console.log("Estas en ingresar cliente");
+        this.dispatchEvent(
+        new CustomEvent(
+          "login",
+          {
+            "detail":{
+              "menu" : 1,
+              "loggedUser":this.loggedUser
+            }
+          }
+        ));
+      }
+      loginError(event,error){
+        this.mensaje=event.detail.response;
+        console.log("Estoy en login Error");
+      }
+
+    }
+    window.customElements.define(LoginComponent.is, LoginComponent);
+  </script>
+</dom-module>

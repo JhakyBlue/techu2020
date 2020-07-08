@@ -1,0 +1,167 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<!--link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html"-->
+
+<dom-module id="movimiento-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding: 10px 15px;
+      }
+      h5{
+        color: #0065BE;
+        font-size: 16px;
+      }
+      .det-cta{
+        border: 1px solid #0065BE;
+        border-radius: 10px;
+        display:flex;
+      }
+
+      .imp{
+        text-align: right;
+        padding-right: 20px;
+        color: #0065BE;
+      }
+      .txt-cab{
+        padding-left: 10px;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <p><a href="view1" on-click="mostrarcuentas" class="text-info">Volver</a></p>
+
+      <div class="container-fluid" style="border:1px solid #0065BE; border-radius:10px; padding:20px;">
+
+        <div class="row" >
+            <div class="col-sm-6">
+              <label class="col-sm-5 control-label" >Nro de Cuenta: </label>
+              <div class="col-sm-6">
+                  <p> {{usucuenta}}</p>
+              </div>
+          </div>
+          <div class="col-sm-6">
+              <label class="col-sm-5 control-label" >Saldo Disponible:</label>
+              <div class="col-sm-6">
+                  <p>{{impdisponible}}</p>
+              </div>
+          </div>
+        </div>
+        <div class="row" >
+          <div class="col-sm-6">
+              <label class="col-sm-5 control-label" >CCI: </label>
+              <div class="col-sm-6">
+                  <p> {{usucuenta}}</p>
+              </div>
+          </div>
+          <div class="col-sm-6">
+
+          </div>
+        </div>
+
+      </div>
+      <br>
+
+      <div class="panel panel-primary">
+          <div class="panel-heading">
+            <div class="row" style="text-align:center">
+              <div class="col-sm-6">
+                  <label>Descripciòn</label>
+              </div>
+              <div class="col-sm-6">
+                  <label>Importe</label>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <template is="dom-repeat" items="{{ctamovimientos}}">
+              <div class="row" style="padding-bottom:10px; padding-left:20px;">
+                <div class="col-sm-6">
+                  <p>{{item.description}}</p>
+                  <p>{{item.date}}</a>
+                </div>
+                <div class="col-sm-6">
+                  <br>
+                  <p class="imp">{{item.amount}}</p>
+                </div>
+              </div>
+            </template>
+
+          </div>
+        </div>
+
+    </paper-card>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class MovimientoComponent extends Polymer.Element {
+      static get is() { return 'movimiento-component'; }
+      static get properties() {
+        return {
+          usucuenta: {
+            type: String,
+            value:''
+          },
+          disponible: {
+            type: Number,
+            value:0
+          },
+          moneda: {
+            type: String,
+            value:'usd'
+          },
+          vermov:{
+            type: Boolean,
+            value:true
+          },
+          vercuen:{
+            type: Boolean,
+            value:false
+          },
+          vistacuenta:{
+            type: Number
+          }
+        };
+      }
+
+      mostrarcuentas(data){
+          console.log("Hizo clic en volver");
+          this.vermov =!this.vermov;
+          this.vercuen =!this.vercuen;
+          console.log("Ver movimientos "+this.vermov);
+          this.controlar();
+      }
+
+      controlar(){
+        this.dispatchEvent(
+        new CustomEvent(
+          "vista",
+          {
+            "detail":{
+              "vercuentas" : this.vercuen,
+              "vermovimientos": this.vermov,
+              "cuenta":this.cuenta,
+              "vistacuenta":1
+            }
+          }
+        ));
+      }
+
+      _isEqualTo(title, number){
+        return title==number;
+      }
+    }
+    window.customElements.define(MovimientoComponent.is, MovimientoComponent);
+  </script>
+</dom-module>

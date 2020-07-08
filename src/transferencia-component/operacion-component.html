@@ -1,0 +1,115 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+
+<dom-module id="operacion-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-card{
+        width: 400px;
+        text-align: left;
+        padding: 1em;1em;1em;1em;
+      }
+      paper-card .card-actions{
+        padding-top: 1em;
+        text-align: right;
+      }
+      .cab{
+        color: #28a745;
+        font-size: 20px;
+      }
+    </style>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+      <div class="container-fluid" >
+        <div class="row">
+          <p class="cab">Operacion Realizada</p>
+        </div>
+        <div class="row" >
+          <div class="col-sm-10" >
+              <label class="col-sm-5 control-label">Cuenta de Cargo:</label>
+              <p> {{operacionejecutada.ctacargo}}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10">
+              <label class="col-sm-5 control-label">Cuenta de Abono</label>
+              <div >
+                  <p> {{operacionejecutada.ctaabono}}</p>
+              </div>
+          </div>
+        </div>
+        <div class="row" >
+          <div class="col-sm-10">
+              <label class="col-sm-5 control-label">Importe a Transferido: </label>
+              <p > {{operacionejecutada.importetransf}}</p>
+          </div>
+        </div>
+        <div class="row" >
+          <div class="col-sm-10">
+              <label class="col-sm-5 control-label">Referencia: </label>
+                  <p> {{operacionejecutada.referenciatransf}}</p>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-10" style="text-align:right;">
+                <button type="button" on-click="verTransferencia" class="text-info">Volver</button>
+            </div>
+        </div>
+      </div>
+
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class OperacionComponent extends Polymer.Element {
+      static get is() { return 'operacion-component'; }
+      static get properties() {
+          return {
+            nuevomovimiento: {
+              type: Object,
+
+            }
+          };
+      }
+
+      _isEqualTo(title, string){
+        return title==string;
+      }
+
+      verTransferencia(){
+            this.dispatchEvent(
+            new CustomEvent(
+              "confirmar",
+              {
+                "detail":{
+                  "paso" : 1,
+                }
+              }
+            ));
+          }
+
+/*      showError(er){
+        this.message=er;
+        this.messageStyle="alert alert-danger";
+        this.$.messageGlobal.open();
+      }*/
+    }
+    window.customElements.define(OperacionComponent.is, OperacionComponent);
+  </script>
+</dom-module>

@@ -1,0 +1,90 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../src/transferencia-component/transferencia-component.html">
+<link rel="import" href="../src/transferencia-component/confirmacion-component.html">
+<link rel="import" href="../src/transferencia-component/operacion-component.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view2">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      h3{
+        color: #1d73b2;
+      }
+    </style>
+  <div class="card">
+      <template is="dom-if" if="{{_isEqualTo(paso,1)}}">
+           <transferencia-component user={{usu}} on-confirmar="EvaluaPaso"></transferencia-component>
+      </template>
+      <template is="dom-if" if="{{_isEqualTo(paso,2)}}">
+          <confirmacion-component nuevaoperacion={{operacion}} on-confirmar="EvaluaPaso"></confirmacion-component>
+      </template>
+      <template is="dom-if" if="{{_isEqualTo(paso,3)}}">
+          <operacion-component operacionejecutada={{operealizada}} on-confirmar="EvaluaPaso"></operacion-component>
+      </template>
+  </div>
+  </template>
+
+  <script>
+    class MyView2 extends Polymer.Element {
+      static get is() { return 'my-view2'; }
+      static get properties(){
+        return{
+          paso : {
+            type: Number,
+            value: 1
+          },
+          dni : {
+            type: String,
+            value:''
+          },
+          vermov2:{
+            type: Boolean,
+            value: true
+          },
+          operacion:{
+            type: Object
+          }
+        };
+      }
+      gopage(){
+          console.log("Hizo vlic");
+          this.contador++;
+          console.log(this.contador);
+          const resolvedPageUrl = this.resolveUrl('my-view2.html');
+
+      }
+      _isEqualTo(title, number){
+        return title==number;
+      }
+
+      EvaluaPaso(e){
+        console.log("Evalua Paso");
+        console.log(e);
+        this.paso=e.detail.paso;
+        this.operacion=e.detail.operacion;
+        this.operealizada=e.detail.operacion;
+        console.log(this.paso);
+        console.log(this.operacion);
+      }
+    }
+
+
+    window.customElements.define(MyView2.is, MyView2);
+  </script>
+</dom-module>

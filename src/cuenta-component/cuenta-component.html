@@ -1,0 +1,134 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<!--link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html"-->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+<dom-module id="cuenta-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font: 14px Verdana,Arial;
+      }
+      .cab{
+        color: #0065BE;
+        font-size: 16px;
+      }
+
+      .imp{
+        text-align: right;
+        padding-right: 20px;
+        color: #0065BE;
+      }
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+        <p class="cab">Revisa todas tus cuentas</p>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <div class="row" style="text-align:center">
+                    <div class="col-sm-6">
+                        <label>Tipo y Nro. de Cuenta</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Saldo Disponible</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <template is="dom-repeat" items="{{usucuentas}}">
+                    <div class="row" style="padding-bottom:20px;">
+                      <div class="col-sm-6">
+                        <p>{{item.tipo}}</p>
+                        <a href="view1" on-click="mostrarmovimientos" style="font-size:16px;">{{item.cuenta}}</a>
+                      </div>
+                      <div class="col-sm-6">
+                        <br>
+                        <p class="imp">{{item.moneda}}  {{item.disponible}}</p>
+                      </div>
+                    </div>
+                  </template>
+
+                </div>
+              </div>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class CuentaComponent extends Polymer.Element {
+      static get is() { return 'cuenta-component'; }
+      static get properties() {
+        return {
+          usucuentas:{
+            type: Object
+          },
+          vistacuenta: {
+            type: Number,
+            value: 1
+          },
+          usumovimientos:{
+            type: Object
+          },
+          cuenta: {
+            type: String,
+            value:''
+          },
+          saldo: {
+            type: Number
+          },
+          vermov:{
+            type: Boolean,
+            value: false
+          },
+          vercuen:{
+            type: Boolean,
+            value: true
+          }
+        };
+      }
+      mostrarmovimientos(data){
+          console.log("Hizo clic en una cuenta");
+          this.vermov =!this.vermov;
+          this.vercuen =!this.vercuen;
+          this.movimientos=data.model.item.transactions;
+          this.cuenta=data.model.item.cuenta;
+          this.saldo=data.model.item.disponible;
+          console.log("Ver movimientos "+this.vermov);
+          console.log(this.saldo);
+          this.controlar();
+      }
+      controlar(){
+        this.dispatchEvent(
+        new CustomEvent(
+          "vista",
+          {
+            "detail":{
+              "vistacuenta":0,
+              "vercuentas" : this.vercuen,
+              "vermovimientos": this.vermov,
+              "movimientos":this.movimientos,
+              "cuenta":this.cuenta,
+              "saldo":this.saldo
+            }
+          }
+        ));
+      }
+
+      _isEqualTo(title, number){
+        return title==number;
+      }
+    }
+    window.customElements.define(CuentaComponent.is, CuentaComponent);
+  </script>
+</dom-module>

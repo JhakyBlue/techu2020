@@ -1,0 +1,188 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+
+<dom-module id="transferencia-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-card{
+        width: 400px;
+        text-align: left;
+        padding: 1em;1em;1em;1em;
+      }
+      paper-card .card-actions{
+        padding-top: 1em;
+        text-align: right;
+      }
+    </style>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     <iron-ajax
+       url="https://backjav.herokuapp.com/api-peru/v1/account/{{user.id}}"
+       handle-as="json"
+       method="GET"
+       content-type="application/json"
+       last-response = "{{cuentas}}"
+       loading="cargando"
+       auto>
+     </iron-ajax>
+
+     <div class="panel panel-primary">
+         <div class="panel-heading" id="login"><span>Transferencia entre cuentas de Terceros</span></div>
+         <div class="panel-body" >
+             <form class="form-horizontal">
+                 <div class="form-group" >
+                     <div class="col-sm-10">
+                         <label class="col-sm-5 control-label" for="cboDocType">Cuenta de Cargo:</label>
+                         <div class="col-sm-6">
+                           <select id="cboctac" class="form-control" name="cboBP" value="" required>
+                               <option value="">Seleccione la cuenta</option>
+                               <template is="dom-repeat" items={{cuentas}}>
+                                   <option id$="[[item.accountID]]" value$="[[item.cuenta]]">[[item.cuenta]] - [[item.moneda]] [[item.disponible]]</option>
+                               </template>
+                           </select>
+                         </div>
+                     </div>
+                 </div>
+
+                <div class="form-group">
+                        <div class="col-sm-10">
+                                <label class="col-sm-5 control-label" for="name">Cuenta de Abono:</label>
+                                    <div class="col-sm-2">
+                                      <input type="text" class="form-control" id="ctaaentidad" label="0.00" required>
+                                    </div>
+                                    <div class="col-sm-2">
+                                      <input type="text" class="form-control" id="ctaaoficina" label="0.00" required>
+                                    </div>
+                                    <div class="col-sm-3">
+                                      <input type="text" class="form-control" id="ctaacuenta" label="0.00" required>
+                                    </div>
+                          </div>
+                </div>
+
+                 <div class="form-group">
+
+                     <div class="col-sm-10">
+                         <label class="col-sm-5 control-label" for="cboCurrency">MONEDA</label>
+                         <div class="col-sm-6">
+                           <select id="cbomon" class="form-control" name="cboBP" value="" required>
+                               <option value="">Moneda</option>
+                               <option value$="PEN">Soles</option>
+                               <option value$="USD">Dòlares</option>
+                           </select>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="form-group">
+                     <div class="col-sm-10">
+                         <label class="col-sm-5 control-label" for="cardName">Importe</label>
+                         <div class="col-sm-6">
+                             <input type="text" class="form-control" id="imptransf" label="0.00" required>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="form-group">
+                     <div class="col-sm-10">
+                         <label class="col-sm-5 control-label" for="chkAuth">Referencia</label>
+                         <div class="col-sm-6">
+                             <input type="text" class="form-control" id="reftransf" label="Referencia ">
+                         </div>
+                     </div>
+                 </div>
+                 <div class="form-group well">
+                     <div class="pull-right">
+                         <button type="button" on-click="confirmarTransferencia" class="btn btn-success">Siguiente</button>
+                     </div>
+                 </div>
+             </form>
+         </div>
+         </div>
+
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class TransferenciaComponent extends Polymer.Element {
+      static get is() { return 'transferencia-component'; }
+      static get properties() {
+          return {
+            nuevomovimiento: {
+              type: Object
+            },
+            cuentaabono:{
+              type: String
+            }
+          };
+      }
+
+      _isEqualTo(title, string){
+        return title==string;
+      }
+
+      confirmarTransferencia(){
+          //debugger;
+          console.log("Esta es this.$.cboctac " + this.$.cboctac);
+          console.log("Este es this.$.cboctac.value " + this.$.cboctac.value);
+          var entidad=this.$.ctaaentidad.value+'-'+this.$.ctaaoficina.value+'-'+this.$.ctaacuenta.value;
+          this.cuentaabono=entidad;
+          console.log(entidad);
+          var transferencia={
+              "ctacargo":this.$.cboctac.value,
+              "idctacargo":this.$.cboctac.options[this.$.cboctac.selectedIndex].id,
+              "ctaabono":this.cuentaabono,
+              "importetransf":this.$.imptransf.value,
+              "monedatransf":this.$.cbomon.value,
+              "referenciatransf":this.$.reftransf.value,
+              };
+              this.nuevomovimiento=transferencia;
+              console.log(this.nuevomovimiento);
+              this.guardarOperacion();
+              this.limpiar();
+          }
+
+          guardarOperacion(){
+            this.dispatchEvent(
+            new CustomEvent(
+              "confirmar",
+              {
+                "detail":{
+                  "operacion":this.nuevomovimiento,
+                  "paso" : 2,
+                }
+              }
+            ));
+          }
+
+          limpiar(){
+              this.$.cboctac.value="";
+              this.$.ctaaentidad.value="";
+              this.$.ctaaoficina.value="";
+              this.$.ctaacuenta.value="";
+              this.$.imptransf.value="";
+              this.$.cbomon.value="";
+              this.$.reftransf.value="";
+          }
+
+/*      showError(er){
+        this.message=er;
+        this.messageStyle="alert alert-danger";
+        this.$.messageGlobal.open();
+      }*/
+    }
+    window.customElements.define(TransferenciaComponent.is, TransferenciaComponent);
+  </script>
+</dom-module>

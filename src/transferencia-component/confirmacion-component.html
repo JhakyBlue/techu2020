@@ -1,0 +1,144 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+
+<dom-module id="confirmacion-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      .cab{
+        color: #0065BE;
+        font-size: 16px;
+      }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <iron-ajax
+      id="ajax"
+      url="https://backjav.herokuapp.com/api-peru/v1/mov/{{nuevaoperacion.idctacargo}}"
+      handle-as="json"
+      method="PUT"
+      content-type="application/json"
+      loading="cargando"
+      on-response = "movimientoExitoso"
+      on-error="movimientoError">
+    </iron-ajax>
+
+          <p class="cab">Verifica los datos de tu transferencia</p>
+          <div class="container-fluid" >
+            <div class="row" >
+              <div class="col-sm-5" style="border-radius:10px; padding:20px;background-color:#c7ecfb;" >
+                  <label>Cuenta de Cargo </label>
+                  <p> {{nuevaoperacion.ctacargo}}</p>
+
+              </div>
+              <div class="col-sm-1">
+
+              </div>
+              <div class="col-sm-5" style="border-radius:10px; padding:20px;background-color:#c7ecfb;" >
+                  <label>Cuenta de Abono</label>
+                  <div>
+                      <p> {{nuevaoperacion.ctaabono}}</p>
+                  </div>
+              </div>
+            </div>
+            <div class="row" >
+              <div class="col-sm-6">
+                  <label>Importe a Transferir: </label>
+                  <p > {{nuevaoperacion.importetransf}}</p>
+              </div>
+              <div class="col-sm-6">
+
+              </div>
+            </div>
+            <div class="row" >
+              <div class="col-sm-6">
+                  <label>Referencia: </label>
+                      <p> {{nuevaoperacion.referenciatransf}}</p>
+              </div>
+              <div class="col-sm-6">
+                <label>Tipo de cambio: </label>
+                    <p> 3.35</p>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" style="text-align:right;">
+                    <button type="button" on-click="realizarTransferencia" class="btn btn-success">Confirmar</button>
+                </div>
+            </div>
+          </div>
+
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class ConfirmacionComponent extends Polymer.Element {
+      static get is() { return 'confirmacion-component'; }
+      static get properties() {
+          return {
+            operacionRealizada: {
+              type: Object
+            }
+          };
+      }
+
+      _isEqualTo(title, string){
+        return title==string;
+      }
+
+      realizarTransferencia(){
+          console.log("Este es una prueba agregar movimiento");
+          this.operacionRealizada=this.nuevaoperacion;
+          var nuevomovimiento ={
+            "date": "07/07/2020",
+            "amount":this.nuevaoperacion.importetransf,
+            "description": this.nuevaoperacion.referenciatransf,
+            "cuenta":this.nuevaoperacion.ctaabono,
+          };
+          this.$.ajax.body = JSON.stringify(nuevomovimiento);
+          this.$.ajax.params=nuevomovimiento;
+          this.$.ajax.generateRequest();
+          console.log("Estoy agregando un nuevo movimiento");
+        }
+        movimientoExitoso(event,request){
+          var usuario=event.detail.response;
+          console.log(usuario);
+          this.procesarMovimiento();
+        }
+        procesarMovimiento(){
+          console.log("Estas efectuando la transferencia");
+          this.dispatchEvent(
+            new CustomEvent(
+              "confirmar",
+              {
+                "detail":{
+                  "paso" : 3,
+                  "operacion":this.operacionRealizada
+                }
+              }
+            ));
+        }
+
+
+/*      showError(er){
+        this.message=er;
+        this.messageStyle="alert alert-danger";
+        this.$.messageGlobal.open();
+      }*/
+    }
+    window.customElements.define(ConfirmacionComponent.is, ConfirmacionComponent);
+  </script>
+</dom-module>
